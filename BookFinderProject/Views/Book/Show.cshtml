@@ -7,11 +7,9 @@
 @foreach (BookFinderProject.Models.Book book in Model)
 {
     <div class="card form-inline">
-        
         <div class="card-body">
             <div class="visible-lg-inline">
                 <h2 class="card-title">Title: @book.title</h2>
-                <a href="#">content</a>
             </div>
             
             <p class="card-text"><strong>Authors:</strong> @string.Join(", ", book.authors) </p>

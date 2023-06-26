@@ -10,6 +10,7 @@ using BookFinderProject.Models;
 using Newtonsoft.Json;
 using RestSharp;
 using System.Diagnostics;
+using Microsoft.Extensions.Configuration;
 
 namespace BookFinderProject.Controllers
 {
@@ -77,9 +78,16 @@ namespace BookFinderProject.Controllers
 
             var client = new RestClient(apiUrl);
             var request = new RestRequest();
-            request.AddHeader("X-RapidAPI-Key", "f21abfca76mshbf5fb8c9459cda1p1cb357jsn360e0521dbae");
-            request.AddHeader("X-RapidAPI-Host", "book-finder1.p.rapidapi.com");
+            var configuration = new ConfigurationBuilder() 
+                    .AddJsonFile("appsetings.json")
+                    .Build();
 
+            string rapidApiKey = configuration["X-RapidAPI-Key"];
+            string rapidApiHost = configuration["X-RapidAPI-Host"];
+
+            // Use the API keys in your requests
+            request.AddHeader("X-RapidAPI-Key", rapidApiKey);
+            request.AddHeader("X-RapidAPI-Host", rapidApiHost);
             RestResponse response = await client.ExecuteAsync(request);
             Debug.WriteLine(response.StatusDescription);
             Debug.WriteLine(response.StatusCode);
