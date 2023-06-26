@@ -1,0 +1,18 @@
+﻿@model List<Vidly.Models.Movie>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<table style="margin-block:5px 5px; border:2px solid; width:100%">
+    <th>Movie</th>
+    <tbody style="grid:auto">
+        @foreach (Vidly.Models.Movie movie in Model)
+        {
+            <tr>
+                <td>@movie.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

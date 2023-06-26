@@ -1,0 +1,40 @@
+﻿@model List<BookFinderProject.Models.Book>
+@{
+    ViewBag.Title = "Show";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.Partial("_BooksForm")
+@foreach (BookFinderProject.Models.Book book in Model)
+{
+    <div class="card form-inline">
+        
+        <div class="card-body">
+            <div class="visible-lg-inline">
+                <h2 class="card-title">Title: @book.title</h2>
+                <a href="#">content</a>
+            </div>
+            
+            <p class="card-text"><strong>Authors:</strong> @string.Join(", ", book.authors) </p>
+            <p class="card-text"><strong>Page count:</strong> @book.page_count</p>
+            <p class="card-text">
+                <strong>Age:</strong> @if (book.min_age != null)
+                {@book.min_age }
+            else
+            { <span> None </span>} - @if (book.max_age != null)
+                {@book.max_age }
+            else
+            { <span> None </span>}
+        </p>
+        <p class="card-text"><strong>Lexile:</strong> @book.measurements.english.lexile</p>
+        <div class="img-thumbnail">
+            <div class="col-md-4">
+                <img src="@book.published_works[0].cover_art_url" alt="Book Image" class="img-fluid" style="height:150px;">
+            </div>
+        </div>
+        @**<p class="card-text"><strong>Categories:</strong> @if (book.category != null && book.category.Count > 0) { string.Join(", ", book.category); }</p>*@
+
+        </div>
+
+</div>
+
+}

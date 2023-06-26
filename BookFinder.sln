@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookFinderProject", "BookFinderProject\BookFinderProject.csproj", "{20A5A555-0CD4-4E02-8EAE-E6E5E5F21CB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vidly", "Vidly\Vidly.csproj", "{FD8A0772-37E0-4B58-978C-4C9F93A1BABB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{20A5A555-0CD4-4E02-8EAE-E6E5E5F21CB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20A5A555-0CD4-4E02-8EAE-E6E5E5F21CB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20A5A555-0CD4-4E02-8EAE-E6E5E5F21CB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20A5A555-0CD4-4E02-8EAE-E6E5E5F21CB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD8A0772-37E0-4B58-978C-4C9F93A1BABB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD8A0772-37E0-4B58-978C-4C9F93A1BABB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD8A0772-37E0-4B58-978C-4C9F93A1BABB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD8A0772-37E0-4B58-978C-4C9F93A1BABB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DCD34546-3D45-4084-92BA-9D9D8780C1F3}
+	EndGlobalSection
+EndGlobal
