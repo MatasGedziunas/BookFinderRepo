@@ -8,8 +8,11 @@
 {
     <div class="card form-inline">
         <div class="card-body">
-            <div class="visible-lg-inline">
-                <h2 class="card-title">Title: @book.title</h2>
+            <div style="display:inline-flex; align-items:center; justify-content: center">
+                <h2 class="card-title">@book.title</h2>
+                <a href="@book.GenerateAmazonLink()" target="_blank">
+                    <img src="https://cdn3.volusion.com/qtksh.budjt/v/vspfiles/photos/AMAZON-2.jpg?v-cache=1502830070" alt="Get it on amazon" style="width:100px; height:35px; margin-left:10px"/>
+                </a>
             </div>
             
             <p class="card-text"><strong>Authors:</strong> @string.Join(", ", book.authors) </p>

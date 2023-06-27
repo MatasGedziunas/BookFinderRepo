@@ -51,6 +51,16 @@ namespace BookFinderProject.Models
         public string summary { get; set; }
         public string work_id { get; set; }
         public string canonical_isbn { get; set; }
+        public string GenerateAmazonLink()
+        {
+            // Encode the book title for URL
+            string encodedTitle = Uri.EscapeDataString(this.title);
+
+            // Construct the Amazon search link
+            string amazonLink = $"https://www.amazon.com/s?k={encodedTitle}";
+
+            return amazonLink;
+        }
     }
 
     public class Measurement

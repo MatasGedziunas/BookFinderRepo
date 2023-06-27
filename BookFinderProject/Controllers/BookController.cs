@@ -137,5 +137,10 @@ namespace BookFinderProject.Controllers
             return View(books);
         }
 
+        public ActionResult About()
+        {
+            return View();
+        }
+
     }
 }
