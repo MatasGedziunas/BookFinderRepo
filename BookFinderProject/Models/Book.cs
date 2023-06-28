@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
@@ -91,6 +92,19 @@ namespace BookFinderProject.Models
         public string binding { get; set; }
         public string cover_art_url { get; set; }
     }
+    public class BookContext : DbContext
+    {
+        public DbSet<User> user { get; set; }
+        public BookContext() : base("name=BookContext")
+        {
+        }
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>()
+                .ToTable("user"); // Specify the table name here
 
+            base.OnModelCreating(modelBuilder);
+        }
+    }
 
 }
