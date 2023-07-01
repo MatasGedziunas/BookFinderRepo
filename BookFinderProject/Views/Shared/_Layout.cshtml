@@ -6,8 +6,56 @@
     <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <!-- Include the necessary scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script>
+    function bookmark(bookId) {
+        $.ajax({
+            url: '@Url.Action("Bookmark", "User")',
+            type: 'POST',
+            data: { bookId: bookId },
+            cache:false,
+            success: function (response) {
+                if (response.success) {
+                    // Update the bookmark icon using addClass and removeClass
+                    $('#bookmarkIcon' + bookId).removeClass('far').addClass('fas');
+                }
+            },
+            error: function () {
+                // Handle the error case if needed
+            }
+        });
+    }
+        function unbookmark(bookId) {
+        $.ajax({
+            url: '@Url.Action("UnBookmark", "User")',
+            type: 'POST',
+            data: { bookId: bookId },
+            cache: false, // Disable caching
+            success: function (response) {
+                // Check if the bookmarking was successful
+                if (response.success) {
+                    // Update the bookmark icon with animation
+                    var bookmarkIcon = $('#bookmarkIcon' + bookId);
+
+                    // Perform the animation effect (e.g., fade, slide, etc.)
+                    bookmarkIcon.fadeOut(200, function() {
+                        bookmarkIcon.removeClass('fas fa-star').addClass('far fa-star');
+                        bookmarkIcon.fadeIn(200);
+                    });
+                }
+            },
+            error: function () {
+                // Handle the error case if needed
+            }
+        });
+    }
+    </script>
+
 </head>
 <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -23,14 +71,32 @@
                     <li>@Html.ActionLink("Home", "Index", "Book")</li>
                     <li>@Html.ActionLink("About", "About", "Book")</li>
                 </ul>
-                <div class="navbar-collapse collapse pull-right">
-                    <ul class="nav navbar-nav">
-                        <li>@Html.ActionLink("Register", "Create", "User")</li>
-                        <li>@Html.ActionLink("Login", "Login", "User")</li>
-                    </ul>
-                </div>
+                @if (!User.Identity.IsAuthenticated)
+                {
+                    <div class="navbar-collapse collapse pull-right">
+                        <ul class="nav navbar-nav">
+                            <li>@Html.ActionLink("Register", "Create", "User")</li>
+                            <li>@Html.ActionLink("Login", "Login", "User")</li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <div class="navbar-collapse collapse pull-right">
+                        <ul class="nav navbar-nav">
+                            <li>
+                                @Html.ActionLink("My User", "Details", "User", new { id = User.Identity.Name }, null)
+                            </li>
+                            <li>
+                                @Html.ActionLink("My Books", "Show", "User", new { id = User.Identity.Name }, null)
+                            </li>
+                            <li>
+                                @Html.ActionLink("Logout", "Logout", "User")
+                            </li>
+                        </ul>
+                    </div>
+                }
             </div>
-            
         </div>
     </div>
     <div class="container body-content">

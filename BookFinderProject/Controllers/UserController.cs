@@ -1,9 +1,14 @@
 ﻿using BookFinderProject.Models;
+using Microsoft.AspNet.Identity;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
+using BookFinderProject.Controllers;
 
 namespace BookFinderProject.Controllers
 {
@@ -22,24 +27,28 @@ namespace BookFinderProject.Controllers
         }
 
         // POST: User/Login
+        // POST: User/Login
         [HttpPost]
         public ActionResult Login(FormCollection collection)
         {
             try
             {
-                using(var context = new BookContext())
+                using (var context = new BookContext())
                 {
                     // Retrieve the Username and Password from the request
                     string username = collection["Username"];
                     string password = collection["Password"];
                     // Check if a user with the provided username and password exists
-                    bool userExists = context.user.Any(u => u.Username == username && u.Password == password);
+                    User user = context.user.Where(u => u.Username == username && u.Password == password).First();
 
-                    if (userExists)
+                    if (user != null)
                     {
-                        // User exists, perform the desired action
-                        // For example, redirect to a different view or return a success message
-                        return RedirectToAction("Details");
+                        // Retrieve the user ID
+                        FormsAuthentication.SetAuthCookie(user.Id.ToString(), false);
+
+                        // Redirect to the Details action
+                        return RedirectToAction("Details", new { id = user.Id.ToString() });
+
                     }
                     else
                     {
@@ -53,14 +62,104 @@ namespace BookFinderProject.Controllers
             {
                 return View();
             }
-            
+
+        }
+        [Authorize]
+        [HttpPost]
+        public ActionResult Bookmark(string bookId)
+        {
+            using (var context = new BookContext())
+            {
+                // Retrieve the currently logged-in user's ID
+                string userId = User.Identity.Name;
+
+                // Define your SQL query
+                string query = "INSERT INTO book (userId, canonical_published_work_id) VALUES (@UserId, @BookId)";
+
+                // Define the parameters for your query
+                var parameters = new[]
+                {
+                    new MySqlParameter("@UserId", userId),
+                    new MySqlParameter("@BookId", bookId)
+                };
+
+                // Execute the SQL query
+                context.Database.ExecuteSqlCommand(query, parameters);
+            }
+            return Json(new { success = true }); // Modify as per your bookmarking logic
+        }
+        [Authorize]
+        [HttpPost]
+        public ActionResult UnBookmark(string bookId)
+        {
+            using (var context = new BookContext())
+            {
+                // Retrieve the currently logged-in user's ID
+                string userId = User.Identity.Name;
+
+                // Define your SQL query
+                string query = "DELETE FROM book WHERE canonical_published_work_id = @BookId AND userId = @UserId";
+
+                // Define the parameters for your query
+                var parameters = new[]
+                {
+                    new MySqlParameter("@UserId", userId),
+                    new MySqlParameter("@BookId", bookId)
+                };
+
+                // Execute the SQL query
+                context.Database.ExecuteSqlCommand(query, parameters);
+            }
+            return Json(new { success = true }); // Modify as per your bookmarking logic
+        }
+        [Authorize]
+        public ActionResult Show(int id)
+        {
+            if(User.Identity.Name != id.ToString())
+            {
+                return new HttpUnauthorizedResult("Unauthorized Access");
+            }
+            List<Book> books = new List<Book>();
+            var bookTitles = GetBooksTitles(id);
+            BookController bookController = new BookController();
+            foreach (var book in bookTitles)
+            {
+                books.Add(bookController.GetBooks(book).Result.First());                
+            }
+            return View(books);
+        }
+
+        private List<string> GetBooksTitles(int userId)
+        {
+            string query = "SELECT canonical_published_work_id FROM book WHERE userId = @UserId";
+            var parameters = new[]
+            {
+                new MySqlParameter("@UserId", userId),
+            };
+            using (var context = new BookContext())
+            {
+                var books = context.Database.SqlQuery<string>(query, parameters).ToList();
+                return books;
+            }
         }
 
 
-        // GET: User/Details/5
-        public ActionResult Details(int? id)
+        // POST: User/Logout
+        public ActionResult Logout()
         {
-            return View(id);
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Login");
+        }
+
+        // GET: User/Details/5
+        public ActionResult Details(int id)
+        {
+            if(User.Identity.IsAuthenticated && User.Identity.Name == id.ToString())
+               return View(id);
+            else
+            {
+                return View("Login");
+            }
         }
 
         // GET: User/Create

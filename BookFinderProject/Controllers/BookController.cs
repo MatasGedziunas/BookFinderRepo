@@ -11,6 +11,9 @@ using Newtonsoft.Json;
 using RestSharp;
 using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Specialized;
+using System.IO;
+using Microsoft.AspNet.Identity;
 
 namespace BookFinderProject.Controllers
 {
@@ -77,8 +80,9 @@ namespace BookFinderProject.Controllers
             apiUrl += string.Join("&", queryParams);
 
             var client = new RestClient(apiUrl);
-            var request = new RestRequest();
-            var configuration = new ConfigurationBuilder() 
+            var request = new RestRequest();          
+
+            var configuration = new ConfigurationBuilder()
                     .AddJsonFile("appsetings.json")
                     .Build();
 
@@ -88,6 +92,9 @@ namespace BookFinderProject.Controllers
             // Use the API keys in your requests
             request.AddHeader("X-RapidAPI-Key", rapidApiKey);
             request.AddHeader("X-RapidAPI-Host", rapidApiHost);
+            // Use the API keys in your requests
+            client.AddDefaultHeader("X-RapidAPI-Key", rapidApiKey);
+            client.AddDefaultHeader("X-RapidAPI-Host", rapidApiHost);
             RestResponse response = await client.ExecuteAsync(request);
             Debug.WriteLine(response.StatusDescription);
             Debug.WriteLine(response.StatusCode);
@@ -103,39 +110,50 @@ namespace BookFinderProject.Controllers
             return new List<Book>();
         }
         public async Task<ActionResult> Show()
-        {
-            string title = Request.Form["title"];
-            string author = Request.Form["author"];
-            string series = Request.Form["series"];
-            int lexileMin;
-            int lexileMax;
+{
+    string title = "";
+    string author = "";
+    string series = "";
+    int lexileMin = 0;
+    int lexileMax = 0;
 
-            if (int.TryParse(Request.Form["min_lexile"], out int minLexileValue))
-            {
-                lexileMin = minLexileValue;
-            }
-            else
-            {
-                lexileMin = 0;
-            }
+    if (TempData["FormData"] != null)
+    {
+        // Retrieve the preserved form data from TempData
+        var formData = TempData["FormData"] as NameValueCollection;
 
-            if (int.TryParse(Request.Form["max_lexile"], out int maxLexileValue))
-            {
-                lexileMax = maxLexileValue;
-            }
-            else
-            {
-                lexileMax = 0;
-            }
-            string bookType = Request.Form["type"];
-            string categories = Request.Form.Get("category"); // Retrieve as comma-separated string
+        // Retrieve the individual form values
+        title = formData["title"];
+        author = formData["author"];
+        series = formData["series"];
+    }
+    else
+    {
+        title = Request.Form["title"];
+        author = Request.Form["author"];
+        series = Request.Form["series"];
+    }
 
-            // Call the GetBooks method and pass the form data
-            List<Book> books = await GetBooks(title, author, series, bookType, categories, lexileMin, lexileMax);
+    if (int.TryParse(Request.Form["min_lexile"], out int minLexileValue))
+    {
+        lexileMin = minLexileValue;
+    }
 
-            // Process the books and return the appropriate view
-            return View(books);
-        }
+    if (int.TryParse(Request.Form["max_lexile"], out int maxLexileValue))
+    {
+        lexileMax = maxLexileValue;
+    }
+
+    string bookType = Request.Form["type"];
+    string categories = Request.Form.Get("category"); // Retrieve as comma-separated string
+
+    // Call the GetBooks method and pass the form data
+    List<Book> books = await GetBooks(title, author, series, bookType, categories, lexileMin, lexileMax);
+
+    // Process the books and return the appropriate view
+    return View(books);
+}
+
 
         public ActionResult About()
         {

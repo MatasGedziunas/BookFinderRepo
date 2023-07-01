@@ -1,0 +1,70 @@
+﻿@model BookFinderProject.Models.Book
+
+@using BookFinderProject.Models
+@using MySql.Data.MySqlClient;
+@functions{
+    public bool hasLiked(string bookId, string userId)
+    {
+        using (var context = new BookContext())
+        {
+            string query = "SELECT COUNT(*) FROM book WHERE canonical_published_work_id = @bookId AND userId = @userId";
+            // Define the parameters for your query
+            var parameters = new[]
+            {
+                    new MySqlParameter("@userId", userId),
+                    new MySqlParameter("@bookId", bookId)
+                };
+            // Execute the query and get the count
+            var count = context.Database.SqlQuery<int>(query, parameters).FirstOrDefault();
+            System.Diagnostics.Debug.WriteLine(count);
+            // Return true if count is greater than 0, indicating that the user has liked the book
+            return count > 0;
+        }
+
+    }
+}
+<div class="card form-inline">
+    <div class="card-body">
+        <div style="display:inline-flex; align-items:center; justify-content: center">
+            <h2 class="card-title">@Model.title</h2>
+            <a href="@Model.GenerateAmazonLink()" target="_blank">
+                <img src="https://cdn3.volusion.com/qtksh.budjt/v/vspfiles/photos/AMAZON-2.jpg?v-cache=1502830070" alt="Get it on amazon" style="width:100px; height:35px; margin-left:10px" />
+            </a>
+            @if (User.Identity.IsAuthenticated)
+            {
+                if (!hasLiked(@Model.canonical_published_work_id, User.Identity.Name))
+                {
+                    <a onclick="bookmark('@Model.canonical_published_work_id')">
+                        <i id="bookmarkIcon+@Model.canonical_published_work_id" class="far fa-star"></i>
+                    </a>
+                }
+                    
+                 else {
+                        <a onclick="unbookmark('@Model.canonical_published_work_id')">
+                            <i id="bookmarkIcon+@Model.canonical_published_work_id" class="fas fa-star"></i>
+                        </a>
+                    }
+             }
+        </div>
+
+        <p class="card-text"><strong>Authors:</strong> @string.Join(", ", Model.authors) </p>
+        <p class="card-text"><strong>Page count:</strong> @Model.page_count</p>
+        <p class="card-text">
+            <strong>Age:</strong> @if (Model.min_age != null)
+            {@Model.min_age }
+        else
+        { <span> None </span>} - @if (Model.max_age != null)
+            {@Model.max_age }
+        else
+        { <span> None </span>}
+    </p>
+    <p class="card-text"><strong>Lexile:</strong> @Model.measurements.english.lexile</p>
+    <div class="img-thumbnail">
+        <div class="col-md-4">
+            <img src="@Model.published_works[0].cover_art_url" alt="Book Image" class="img-fluid" style="height:150px;">
+        </div>
+    </div>
+    @**<p class="card-text"><strong>Categories:</strong> @if (Model.category != null && Model.category.Count > 0) { string.Join(", ", Model.category); }</p>*@
+</div>
+</div>
+
